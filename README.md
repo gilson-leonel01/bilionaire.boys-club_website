@@ -87,7 +87,7 @@ backend: `http://localhost:3001`.
 
 ## 📌 Links úteis
 
-- [Documentação do NodeJS]([https://nodejs.org/docs](https://nodejs.org/docs/latest/api/))
+- [Documentação do NodeJS](https://nodejs.org/docs)
 - [PostgreSQL](https://www.postgresql.org/)
 - [Prisma ORM](https://www.prisma.io/docs)
 - [React.js](https://reactjs.org/)
