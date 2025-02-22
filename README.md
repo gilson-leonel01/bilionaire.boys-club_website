@@ -21,11 +21,11 @@ cd bilionaire.boys-club_website
 
 ### 2️⃣ Configuração do Ambiente
 
-#### Backend (NodeJS, Prisma ORM, PostgreSQL)
+#### Backend (NodeJS, Prisma ORM, MySQL)
 
 ##### 📌 Pré-requisitos:
 - Node.js instalado (versão 16+ recomendada).
-- PostgreSQL configurado.
+- MySQL configurado.
 - Prisma ORM configurado.
 - Criar um arquivo `.env` e adicionar as credenciais do banco de dados.
 
@@ -74,7 +74,7 @@ backend: `http://localhost:3001`.
 ### 🔹 Backend:
 - NodeJS
 - Prisma ORM
-- PostgreSQL
+- MySQL
 
 ### 🔹 Frontend:
 - React.js
@@ -87,8 +87,8 @@ backend: `http://localhost:3001`.
 
 ## 📌 Links úteis
 
-- [Documentação do NodeJS](https://nodejs.org/docs)
-- [PostgreSQL](https://www.postgresql.org/)
+- [NodeJS](https://nodejs.org/docs)
+- [MySQL](https://dev.mysql.com/doc/)
 - [Prisma ORM](https://www.prisma.io/docs)
 - [React.js](https://reactjs.org/)
 
