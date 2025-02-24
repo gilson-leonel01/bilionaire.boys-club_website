@@ -9,6 +9,152 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id            BigInt             @id @default(autoincrement())
+  email         String             @unique
+  password_hash String
+  first_name    String
+  last_name     String
+  role          Role               @default(MEMBER)
+  created_at    DateTime           @default(now())
+  updated_at    DateTime           @updatedAt
+  is_active     Boolean            @default(true)
+  last_login    DateTime?
+  subscriptions UserSubscription[]
+  views         ContentView[]
+  logs          Log[]              @relation("PerformedBy")
+}
+
+model SubscriptionPlan {
+  id            Int                @id @default(autoincrement())
+  name          String
+  description   String?
+  price         Decimal            @db.Decimal(10, 2)
+  duration_days Int
+  is_active     Boolean            @default(true)
+  created_at    DateTime           @default(now())
+  subscriptions UserSubscription[]
+}
+
+model UserSubscription {
+  id                BigInt             @id @default(autoincrement())
+  user              User               @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id           BigInt
+  plan              SubscriptionPlan   @relation(fields: [plan_id], references: [id], onDelete: Restrict)
+  plan_id           Int
+  start_date        DateTime
+  end_date          DateTime
+  status            SubscriptionStatus @default(ACTIVE)
+  payment_method    PaymentMethod?
+  payment_reference String?
+  created_at        DateTime           @default(now())
+  payments          Payment[]
+  logs              Log[]              @relation("SubscriptionLogs")
+}
+
+model Content {
+  id            BigInt           @id @default(autoincrement())
+  title         String
+  slug          String           @unique
+  description   String?
+  type          ContentType
+  category      ContentCategory? @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  category_id   Int?
+  video_url     String?
+  thumbnail_url String?
+  duration      Int?
+  is_premium    Boolean          @default(false)
+  status        ContentStatus    @default(DRAFT)
+  published_at  DateTime?
+  created_at    DateTime         @default(now())
+  updated_at    DateTime         @updatedAt
+  views_count   BigInt           @default(0)
+  views         ContentView[]
+}
+
+model ContentCategory {
+  id          Int       @id @default(autoincrement())
+  name        String
+  slug        String    @unique
+  description String?
+  created_at  DateTime  @default(now())
+  contents    Content[]
+}
+
+model ContentView {
+  id         BigInt   @id @default(autoincrement())
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    BigInt
+  content    Content  @relation(fields: [content_id], references: [id], onDelete: Cascade)
+  content_id BigInt
+  viewed_at  DateTime @default(now())
+  watch_time Int?
+}
+
+model Payment {
+  id                   BigInt           @id @default(autoincrement())
+  user_subscription    UserSubscription @relation(fields: [user_subscription_id], references: [id], onDelete: Cascade)
+  user_subscription_id BigInt
+  amount               Decimal          @db.Decimal(10, 2)
+  status               PaymentStatus    @default(PENDING)
+  transaction_id       String?
+  payment_date         DateTime         @default(now())
+}
+
+model Log {
+  id              BigInt            @id @default(autoincrement())
+  table_name      String
+  record_id       BigInt
+  action          LogAction
+  action_details  String?
+  performed_by    User?             @relation("PerformedBy", fields: [performed_by_id], references: [id], onDelete: SetNull)
+  performed_by_id BigInt?
+  performed_at    DateTime          @default(now())
+  subscription    UserSubscription? @relation("SubscriptionLogs", fields: [record_id], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  MEMBER
+  ADMIN
+  MODERATOR
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  PAYPAL
+  BANK_TRANSFER
+}
+
+enum ContentType {
+  EVENT_VIDEO
+  SHORT
+  ARTICLE
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum LogAction {
+  INSERT
+  UPDATE
+  DELETE
 }
